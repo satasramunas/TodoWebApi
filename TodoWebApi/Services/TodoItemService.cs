@@ -1,51 +1,70 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TodoWebApi.Data;
+using TodoWebApi.Dtos;
+using TodoWebApi.Exceptions;
 using TodoWebApi.Models;
+using TodoWebApi.Respositories;
 
 namespace TodoWebApi.Services
 {
     public class TodoItemService
     {
-        private readonly DataContext _dataContext;
+        private readonly TodoItemRepository _todoItemRepository;
+        private readonly IMapper _mapper;
 
-        public TodoItemService(DataContext dataContext)
+        public TodoItemService(TodoItemRepository todoItemRepository, IMapper mapper)
         {
-            _dataContext = dataContext;
+            _todoItemRepository = todoItemRepository;
+            _mapper = mapper;
         }
 
-        public async Task<List<TodoItem>> GetAll()
+        public async Task<List<TodoItemDto>> GetAll()
         {
-            return await _dataContext.TodoItems.ToListAsync();
+            var entities = await _todoItemRepository.GetAll();  // reikia async, nes is DB. Cia turime entities
+
+            List<TodoItemDto> dtos = _mapper.Map<List<TodoItemDto>>(entities);
+            // pasakom, kad is entities permappintu i List<TodoItemDto>
+
+            return dtos;
         }
 
-        public async Task<TodoItem> GetById(int id)
+        public async Task<TodoItemDto> GetById(int id)
         {
-            return await _dataContext.TodoItems.FirstOrDefaultAsync(x => x.Id == id);
+            var todoItem = await _todoItemRepository.GetById(id);
+
+            TodoItemDto dto = _mapper.Map<TodoItemDto>(todoItem);
+
+            return dto; 
         }
 
-        public async Task Add(TodoItem todoItem)
+        public async Task Create(CreateTodoItemDto todoItemDto)
         {
-            _dataContext.TodoItems.Add(todoItem);
-            await _dataContext.SaveChangesAsync();
+            var entity = new TodoItem
+            {
+                Name = todoItemDto.Name
+            };
+
+            await _todoItemRepository.Create(entity);
         }
 
-        public async Task Update (TodoItem todoItem)
+        public async Task Update(CreateTodoItemDto todoItemDto)
         {
-            _dataContext.Update(todoItem);
-            await _dataContext.SaveChangesAsync();
+            var entity = new TodoItem
+            {
+                Name = todoItemDto.Name
+            };
+            await _todoItemRepository.Update(entity);
         }
 
         public async Task Remove(int id)
         {
-            TodoItem todoItem = await GetById(id);
-
-            _dataContext.TodoItems.Remove(todoItem);
-            await _dataContext.SaveChangesAsync();
+            await _todoItemRepository.Remove(id);
         }
     }
 }

@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TodoWebApi.Models
+namespace TodoWebApi.Dtos
 {
-    public class TodoItem
+    public class TodoItemDto
     {
         public int Id { get; set; }
 
@@ -14,8 +14,6 @@ namespace TodoWebApi.Models
 
         public string LastName { get; set; }
 
-        public DateTime DateCreated { get; set; } = DateTime.Now;
-
-        public string CreatedBy { get; set; } = "Admin";
+        public DateTime DateCreated { get; set; }
     }
 }
