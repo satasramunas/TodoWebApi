@@ -33,8 +33,10 @@ namespace TodoWebApi
             string connectionString = Configuration.GetConnectionString("DefaultConnection");
 
             services.AddDbContext<DataContext>(d => d.UseSqlServer(connectionString));
+            
             services.AddTransient<TodoItemService>();
-            services.AddTransient<TodoItemRepository>();
+            services.AddTransient<ITodoItemRepository, TodoItemRepository>();
+
             services.AddAutoMapper(typeof(Startup));
 
             services.AddControllers();

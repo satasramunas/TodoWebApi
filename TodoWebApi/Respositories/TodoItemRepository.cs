@@ -10,7 +10,7 @@ using TodoWebApi.Models;
 
 namespace TodoWebApi.Respositories
 {
-    public class TodoItemRepository
+    public class TodoItemRepository : ITodoItemRepository
     {
         private readonly DataContext _dataContext;
 
@@ -19,18 +19,12 @@ namespace TodoWebApi.Respositories
             _dataContext = dataContext;
         }
 
-        public async Task<List<TodoItem>> GetAll()
+        public async Task<List<TodoItem>> GetAllAsync()
         {
             return await _dataContext.TodoItems.ToListAsync();
         }
-
-        public async Task Create (TodoItem todoItem)
-        {
-            _dataContext.TodoItems.Add(todoItem);
-            await _dataContext.SaveChangesAsync();
-        }
-
-        public async Task<TodoItem> GetById(int id)
+        
+        public async Task<TodoItem> GetByIdAsync(int id)
         {
             var todoItem = await _dataContext.TodoItems.FirstOrDefaultAsync(x => x.Id == id);
 
@@ -41,7 +35,13 @@ namespace TodoWebApi.Respositories
             return todoItem;
         }
 
-        public async Task Update(TodoItem todoItem)
+        public async Task CreateAsync(TodoItem todoItem)
+        {
+            _dataContext.TodoItems.Add(todoItem);
+            await _dataContext.SaveChangesAsync();
+        }
+
+        public async Task UpdateAsync(TodoItem todoItem)
         {
             var entity = new TodoItem
             {
@@ -52,9 +52,9 @@ namespace TodoWebApi.Respositories
             await _dataContext.SaveChangesAsync();
         }
 
-        public async Task Remove(int id)
+        public async Task RemoveAsync(int id)
         {
-            var todoItem = await GetById(id);
+            var todoItem = await GetByIdAsync(id);
 
             _dataContext.TodoItems.Remove(todoItem);
             await _dataContext.SaveChangesAsync();

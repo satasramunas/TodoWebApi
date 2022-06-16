@@ -14,6 +14,7 @@ namespace TodoWebApi.Mappings
         public MappingProfile()
         {
             CreateMap<TodoItem, TodoItemDto>().ReverseMap();
+            CreateMap<CreateTodoItemDto, TodoItem>();
         }
     }
 }
